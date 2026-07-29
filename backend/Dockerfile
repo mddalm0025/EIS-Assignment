@@ -12,4 +12,4 @@ COPY backend ./backend
 COPY students_marks.csv corrections.json ./
 
 WORKDIR /app/backend
-CMD ["gunicorn", "school_platform.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py import_marks && gunicorn school_platform.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3"]
