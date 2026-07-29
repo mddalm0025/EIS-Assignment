@@ -72,6 +72,10 @@ docker compose up --build
 
 The container runs migrations and resets/imports the source data before starting Gunicorn on port 8000. For a separately deployed frontend, copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_BASE_URL` to the public API URL (including `/api`).
 
+### Render
+
+`render.yaml` provisions a free Docker web service and a free Render PostgreSQL database in Singapore. Create a Render Blueprint from the GitHub repository; Render generates `DJANGO_SECRET_KEY`, connects `DATABASE_URL`, runs migrations/import, and deploys the API automatically. After the API receives its public URL, set `VITE_API_BASE_URL` to `<api-url>/api` when deploying the React frontend as a Render Static Site.
+
 ## API
 
 | Method | Path | Purpose |

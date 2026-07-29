@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: eis-assignment-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    dockerCommand: >-
+      sh -c "python manage.py migrate && python manage.py import_marks && gunicorn school_platform.wsgi:application --bind 0.0.0.0:$PORT --workers 3"
+    healthCheckPath: /api/summary/
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eis-assignment-db
+          property: connectionString
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DJANGO_BEHIND_PROXY
+        value: "True"
+      - key: DJANGO_SECURE_HSTS_SECONDS
+        value: "31536000"
+
+databases:
+  - name: eis-assignment-db
+    plan: free
+    region: singapore
+    databaseName: eis_assignment
+    user: eis_user
+    postgresMajorVersion: "16"
