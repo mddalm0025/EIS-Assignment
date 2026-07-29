@@ -49,6 +49,29 @@ npm run dev
 
 Open the Vite URL shown in the terminal (normally `http://localhost:5173`).
 
+## PostgreSQL and deployment
+
+All deployment settings are environment-driven. Copy `.env.example` to `.env`, replace every placeholder secret, and set the public frontend and backend URLs. Never commit `.env`.
+
+Production defaults enforce HTTPS and enable one-year HSTS. If TLS terminates outside Django, configure `DJANGO_SECURE_SSL_REDIRECT`, `DJANGO_SECURE_HSTS_SECONDS`, and proxy headers to match that platform before exposing the service publicly.
+Only set `DJANGO_SECURE_HSTS_PRELOAD=True` after confirming every subdomain is HTTPS-only and eligible for browser preload.
+
+The API selects PostgreSQL automatically whenever `DATABASE_URL` is supplied, for example:
+
+```text
+DATABASE_URL=postgresql://eis_user:strong-password@db:5432/eis_assignment
+```
+
+To run the API and PostgreSQL together in containers:
+
+```bash
+cp .env.example .env
+# Edit .env and set DJANGO_SECRET_KEY and POSTGRES_PASSWORD.
+docker compose up --build
+```
+
+The container runs migrations and resets/imports the source data before starting Gunicorn on port 8000. For a separately deployed frontend, copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_BASE_URL` to the public API URL (including `/api`).
+
 ## API
 
 | Method | Path | Purpose |
